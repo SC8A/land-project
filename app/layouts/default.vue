@@ -10,11 +10,11 @@
         v-for="view in views"
         class="w-full self-center items-center justify-center hover:bg-slate-400"
       >
-        <lo class="flex self-center w-full">
+        <ol class="flex self-center w-full">
           <NuxtLink :to="view.route">
             <span :class="view.icon" />{{ view.name }}</NuxtLink
           >
-        </lo>
+        </ol>
       </ol>
     </aside>
     <div class="border-t-8 border-r-8 w-full h-full bg-[#f0f0f0]">

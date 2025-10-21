@@ -15,11 +15,11 @@ CREATE TABLE "owners_place" (
 
 CREATE TABLE "owners" (
   "id" serial PRIMARY KEY,
-  "identification_type" int,
-  "identification_number" varchar,
+  "identification_type" varchar,
+  "identification_number" varchar UNIQUE,
   "name" varchar,
   "last_name" varchar,
-  "second_last_name" boolean
+  "second_last_name" varchar
 );
 
 CREATE TABLE "lands" (

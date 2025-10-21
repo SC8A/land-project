@@ -5,7 +5,7 @@
 </template>
 <script setup lang="ts">
 interface Values {
-  id: number;
+  id?: number;
   name: string;
 }
 

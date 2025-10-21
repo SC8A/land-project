@@ -29,14 +29,14 @@
         </thead>
         <tbody>
           <tr
-            v-for="owner in owners"
+            v-for="(owner, index) in owners"
             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
           >
             <th
               scope="row"
               class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
             >
-              {{ owner.id }}
+              {{ index + 1 }}
             </th>
             <td class="px-6 py-4">
               {{ owner.identification_type }}
@@ -52,25 +52,29 @@
         </tbody>
       </table>
     </div>
-    {{ createOwner }}
     <dialog class="bg-pink-400 z-10 w-1/2 h-1/2" :open="openDialog">
       <h1>Crear propiertario inicial</h1>
-      <form method="dialog" class="flex flex-col">
+      <form @submit.prevent="handleSubmit" class="flex flex-col">
         <section class="flex flex-col">
           <div>
-            <label>Tipo de identificacion</label>
-            <Select
-              :values="identificationTypes"
-              v-model="createOwner.identification_type"
+            <label for="documentType">Tipo de identificacion</label>
+            <select v-model="createOwner.identification_type" id="documentType">
+              <option v-for="[key, label] in IdentificationTypesArray">
+                {{ label }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <label for="identificationNumber">Numero de identificacion</label>
+            <input
+              type="text"
+              v-model="createOwner.identification_number"
+              id="identificationNumber"
             />
           </div>
           <div>
-            <label>Numero de identificacion</label>
-            <input type="text" v-model="createOwner.identification_number" />
-          </div>
-          <div>
-            <label>Nombres</label>
-            <input type="text" v-model="createOwner.name" />
+            <label for="names">Nombres</label>
+            <input type="text" v-model="createOwner.name" id="names" />
           </div>
           <div>
             <label>Primer apellido</label>
@@ -82,9 +86,7 @@
           </div>
         </section>
         <menu>
-          <button @click="() => (openDialog = false)" id="cancel" type="reset">
-            Cancel
-          </button>
+          <button @click="resetForm" type="button">Resetear campos</button>
           <button type="submit">Confirm</button>
         </menu>
       </form>
@@ -92,7 +94,7 @@
   </NuxtLayout>
 </template>
 <script setup lang="ts">
-const { data: owners } = await useFetch("/api/owners");
+const { data: owners, refresh: refreshOwners } = await useFetch("/api/owners");
 const openDialog = ref(true);
 const createOwner = ref<Owners>({
   id: undefined,
@@ -102,18 +104,27 @@ const createOwner = ref<Owners>({
   last_name: "",
   second_last_name: "",
 });
-const identificationTypes = [
-  {
-    id: 1,
-    name: "CEDULA",
-  },
-  {
-    id: 2,
-    name: "PASAPORTE",
-  },
-  {
-    id: 3,
-    name: "CEDULA EXTRANJERIA",
-  },
-];
+
+const IdentificationTypesArray = Object.entries(IdentificationTypes);
+
+async function handleSubmit() {
+  const response = await $fetch<ApiResponse>("/api/owners", {
+    method: "POST",
+    body: createOwner.value,
+  });
+  if (!response) return;
+  resetForm();
+  openDialog.value = false;
+  refreshOwners();
+}
+
+function resetForm() {
+  createOwner.value = {
+    name: "",
+    identification_number: "",
+    last_name: "",
+    second_last_name: "",
+    identification_type: IdentificationTypes.cedula,
+  };
+}
 </script>

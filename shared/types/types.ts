@@ -12,3 +12,8 @@ export enum IdentificationTypes {
   pasaporte = "PASAPORTE",
   cedula_extranjeria = "CEDULA EXTRANJERIA",
 }
+
+export interface ApiResponse {
+  status: number;
+  message: any;
+}
